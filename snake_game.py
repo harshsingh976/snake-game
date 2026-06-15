@@ -10,7 +10,8 @@ wn.tracer(0)
 
 # Score
 score = 0
-high_score = 0
+with open("high_score.txt", "r") as file:
+    high_score = int(file.read())
 game_started = False
 paused = False
 
@@ -166,6 +167,8 @@ while True:
 
         if score > high_score:
             high_score = score
+            with open("high_score.txt", "w") as file:
+             file.write(str(high_score))
 
         pen.clear()
         pen.write(

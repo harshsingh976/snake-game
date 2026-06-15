@@ -14,6 +14,8 @@ with open("high_score.txt", "r") as file:
     high_score = int(file.read())
 game_started = False
 paused = False
+difficulty = 0.10
+difficulty_name = "Medium"
 
 pen = turtle.Turtle()
 pen.speed(0)
@@ -32,13 +34,26 @@ start_pen.color("white")
 start_pen.penup()
 start_pen.hideturtle()
 
-start_pen.goto(0, 0)
+start_pen.goto(0, -50)
 
-start_pen.write(
-    "SNAKE GAME\n\nPress SPACE to Start",
-    align="center",
-    font=("Arial", 20, "bold")
-)
+def update_start_screen():
+    start_pen.clear()
+
+    start_pen.goto(0, -50)
+
+    start_pen.write(
+        f"SNAKE GAME\n\n"
+        f"1 - Easy\n"
+        f"2 - Medium\n"
+        f"3 - Hard\n\n"
+        f"Current: {difficulty_name}\n\n"
+        f"Press SPACE to Start",
+        align="center",
+        font=("Arial", 20, "bold")
+    )
+
+update_start_screen()
+
 
 # Head
 head = turtle.Turtle()
@@ -58,6 +73,22 @@ food.penup()
 food.goto(0, 100)
 
 segments = []
+
+def update_start_screen():
+    start_pen.clear()
+
+    start_pen.goto(0, -50)
+
+    start_pen.write(
+        f"SNAKE GAME\n\n"
+        f"1 - Easy\n"
+        f"2 - Medium\n"
+        f"3 - Hard\n\n"
+        f"Current: {difficulty_name}\n\n"
+        f"Press SPACE to Start",
+        align="center",
+        font=("Arial", 20, "bold")
+    )
 def start_game():
     global game_started
 
@@ -102,7 +133,40 @@ def move():
 
     if head.direction == "left":
         x = head.xcor()
-        head.setx(x - 10)
+        head.setx(x - 10)       # 
+def easy():
+    global difficulty, difficulty_name
+
+    if game_started:
+        return
+
+    difficulty = 0.15
+    difficulty_name = "Easy"
+
+    update_start_screen()
+
+
+def medium():
+    global difficulty, difficulty_name
+
+    if game_started:
+        return
+
+    difficulty = 0.10
+    difficulty_name = "Medium"
+
+    update_start_screen()  
+def hard():
+    global difficulty, difficulty_name
+
+    if game_started:
+        return
+
+    difficulty = 0.05
+    difficulty_name = "Hard"
+
+    update_start_screen()
+
 
 # Keyboard controls
 wn.listen()
@@ -113,7 +177,9 @@ wn.onkeypress(go_right, "6")
 wn.onkeypress(start_game, "space")
 wn.onkeypress(pause_game, "p")
 wn.onkeypress(resume_game, "r")
-
+wn.onkeypress(easy, "e")
+wn.onkeypress(medium, "m")
+wn.onkeypress(hard, "h")
 # Main game loop
 while True:
     wn.update()
@@ -167,8 +233,8 @@ while True:
 
         if score > high_score:
             high_score = score
-            with open("high_score.txt", "w") as file:
-             file.write(str(high_score))
+            try:
+                
 
         pen.clear()
         pen.write(
@@ -213,6 +279,6 @@ while True:
                 font=("Arial", 16, "bold")
             )
 
-    time.sleep(0.1)
+    time.sleep(difficulty)
 
 wn.mainloop()

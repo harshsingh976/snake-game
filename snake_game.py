@@ -11,6 +11,8 @@ wn.tracer(0)
 # Score
 score = 0
 high_score = 0
+game_started = False
+paused = False
 
 pen = turtle.Turtle()
 pen.speed(0)
@@ -22,6 +24,19 @@ pen.write(
     f"Score: {score}  High Score: {high_score}",
     align="center",
     font=("Arial", 16, "bold")
+)
+start_pen = turtle.Turtle()
+start_pen.speed(0)
+start_pen.color("white")
+start_pen.penup()
+start_pen.hideturtle()
+
+start_pen.goto(0, 0)
+
+start_pen.write(
+    "SNAKE GAME\n\nPress SPACE to Start",
+    align="center",
+    font=("Arial", 20, "bold")
 )
 
 # Head
@@ -42,6 +57,17 @@ food.penup()
 food.goto(0, 100)
 
 segments = []
+def start_game():
+    global game_started
+
+    game_started = True
+    start_pen.clear()
+def pause_game():
+    global paused
+    paused = True
+def resume_game():
+    global paused
+    paused = False
 
 # Movement functions
 def go_up():
@@ -83,10 +109,20 @@ wn.onkeypress(go_up, "8")
 wn.onkeypress(go_down, "2")
 wn.onkeypress(go_left, "4")
 wn.onkeypress(go_right, "6")
+wn.onkeypress(start_game, "space")
+wn.onkeypress(pause_game, "p")
+wn.onkeypress(resume_game, "r")
 
 # Main game loop
 while True:
     wn.update()
+    if not game_started:
+        time.sleep(0.1)
+        continue
+
+    if paused:
+        time.sleep(0.1)
+        continue
 
     # Border collision
     if (head.xcor() > 290 or head.xcor() < -290 or

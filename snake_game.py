@@ -144,6 +144,13 @@ food.color("green")
 food.penup()
 food.goto(0, 100)
 
+bonus_food = turtle.Turtle()
+bonus_food.speed(0)
+bonus_food.shape("circle")
+bonus_food.color("gold")
+bonus_food.penup()
+bonus_food.goto(1000, 1000)
+
 segments = []
 
 
@@ -309,6 +316,11 @@ while True:
         x = random.randint(-28, 28) * 10
         y = random.randint(-28, 28) * 10
         food.goto(x, y)
+        if random.randint(1, 5) == 1:
+           bonus_x = random.randint(-28, 28) * 10
+           bonus_y = random.randint(-28, 28) * 10
+
+           bonus_food.goto(bonus_x, bonus_y)
 
         new_segment = turtle.Turtle()
         new_segment.speed(0)
@@ -333,7 +345,27 @@ while True:
             align="center",
             font=("Arial", 16, "bold")
         )
+    
+    if head.distance(bonus_food) < 20:
 
+      bonus_food.goto(1000, 1000)
+
+      score += 50
+
+      update_speed()
+
+      if score > high_score:
+        high_score = score
+
+        with open("high_score.txt", "w") as file:
+            file.write(str(high_score))
+
+      pen.clear()
+      pen.write(
+        f"Score: {score}  High Score: {high_score}",
+        align="center",
+        font=("Arial", 16, "bold")
+      )
     # Move body
     for index in range(len(segments) - 1, 0, -1):
         x = segments[index - 1].xcor()

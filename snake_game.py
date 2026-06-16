@@ -8,6 +8,7 @@ wn.bgcolor("red")
 wn.setup(width=600, height=600)
 wn.tracer(0)
 
+
 # Score
 score = 0
 
@@ -26,6 +27,7 @@ game_over = False
 difficulty = 0.10
 difficulty_name = "Medium"
 speed_level = "Normal"
+bonus_spawn_time = 0
 
 pen = turtle.Turtle()
 pen.speed(0)
@@ -99,6 +101,7 @@ def restart_game():
     score = 0
     difficulty = 0.10
     food.goto(0, 100)
+    bonus_food.goto(1000, 1000)
 
     pen.clear()
     pen.write(
@@ -321,6 +324,7 @@ while True:
            bonus_y = random.randint(-28, 28) * 10
 
            bonus_food.goto(bonus_x, bonus_y)
+           bonus_spawn_time = time.time()
 
         new_segment = turtle.Turtle()
         new_segment.speed(0)
@@ -362,10 +366,15 @@ while True:
 
       pen.clear()
       pen.write(
-        f"Score: {score}  High Score: {high_score}",
+        f"Score: {score}  High Score: {high_score}  Speed: {speed_level}",
         align="center",
         font=("Arial", 16, "bold")
-      )
+        )
+    if bonus_food.xcor() != 1000:
+
+         if time.time() - bonus_spawn_time > 5:
+
+            bonus_food.goto(1000, 1000)
     # Move body
     for index in range(len(segments) - 1, 0, -1):
         x = segments[index - 1].xcor()

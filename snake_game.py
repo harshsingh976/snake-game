@@ -10,10 +10,19 @@ wn.tracer(0)
 
 # Score
 score = 0
-with open("high_score.txt", "r") as file:
-    high_score = int(file.read())
+
+try:
+    with open("high_score.txt", "r") as file:
+        high_score = int(file.read())
+
+except:
+    high_score = 0
+
+    with open("high_score.txt", "w") as file:
+        file.write("0")
 game_started = False
 paused = False
+game_over = False
 difficulty = 0.10
 difficulty_name = "Medium"
 
@@ -35,6 +44,67 @@ start_pen.penup()
 start_pen.hideturtle()
 
 start_pen.goto(0, -50)
+
+pause_pen = turtle.Turtle()
+pause_pen.speed(0)
+pause_pen.color("yellow")
+pause_pen.penup()
+pause_pen.hideturtle()
+
+game_over_pen = turtle.Turtle()
+game_over_pen.speed(0)
+game_over_pen.color("white")
+game_over_pen.penup()
+game_over_pen.hideturtle()
+
+def show_game_over():
+    global game_over
+
+    if game_over:
+        return
+
+    game_over = True
+
+    game_over_pen.clear()
+    game_over_pen.goto(0, 0)
+
+    game_over_pen.write(
+        f"GAME OVER\n\nScore: {score}\n\nPress SPACE to Restart",
+        align="center",
+        font=("Arial", 20, "bold")
+        
+    )
+    print("GAME OVER TRIGGERED")
+   
+
+def restart_game():
+    global score, game_over,game_started
+
+    if not game_over:
+        return
+
+    game_over = False
+
+    game_over_pen.clear()
+
+    head.goto(0, 0)
+    head.direction = "stop"
+
+    for segment in segments:
+        segment.goto(1000, 1000)
+
+    segments.clear()
+
+    score = 0
+    food.goto(0, 100)
+
+    pen.clear()
+    pen.write(
+        f"Score: {score}  High Score: {high_score}",
+        align="center",
+        font=("Arial", 16, "bold")
+    )
+    game_started = True
 
 def update_start_screen():
     start_pen.clear()
@@ -74,21 +144,7 @@ food.goto(0, 100)
 
 segments = []
 
-def update_start_screen():
-    start_pen.clear()
 
-    start_pen.goto(0, -50)
-
-    start_pen.write(
-        f"SNAKE GAME\n\n"
-        f"1 - Easy\n"
-        f"2 - Medium\n"
-        f"3 - Hard\n\n"
-        f"Current: {difficulty_name}\n\n"
-        f"Press SPACE to Start",
-        align="center",
-        font=("Arial", 20, "bold")
-    )
 def start_game():
     global game_started
 
@@ -96,9 +152,26 @@ def start_game():
     start_pen.clear()
 def pause_game():
     global paused
+
+    if paused:
+        return
+
     paused = True
+
+    pause_pen.goto(0, 0)
+
+    pause_pen.write(
+        "PAUSED\n\nPress R to Resume",
+        align="center",
+        font=("Arial", 20, "bold")
+    )
 def resume_game():
     global paused
+
+    if not paused:
+        return
+
+    pause_pen.clear()
     paused = False
 
 # Movement functions
@@ -168,13 +241,20 @@ def hard():
     update_start_screen()
 
 
+def space_handler():
+    if game_over:
+        restart_game()
+    else:
+        start_game()
+
+
 # Keyboard controls
 wn.listen()
 wn.onkeypress(go_up, "8")
 wn.onkeypress(go_down, "2")
 wn.onkeypress(go_left, "4")
 wn.onkeypress(go_right, "6")
-wn.onkeypress(start_game, "space")
+wn.onkeypress(space_handler, "space")
 wn.onkeypress(pause_game, "p")
 wn.onkeypress(resume_game, "r")
 wn.onkeypress(easy, "e")
@@ -190,29 +270,18 @@ while True:
     if paused:
         time.sleep(0.1)
         continue
+    if game_over:
+       time.sleep(0.1)
+       continue
 
     # Border collision
     if (head.xcor() > 290 or head.xcor() < -290 or
-        head.ycor() > 290 or head.ycor() < -290):
+    head.ycor() > 290 or head.ycor() < -290):
 
-        time.sleep(1)
+     show_game_over()
+    
 
-        head.goto(0, 0)
-        head.direction = "stop"
-
-        for segment in segments:
-            segment.goto(1000, 1000)
-
-        segments.clear()
-
-        score = 0
-
-        pen.clear()
-        pen.write(
-            f"Score: {score}  High Score: {high_score}",
-            align="center",
-            font=("Arial", 16, "bold")
-        )
+    
 
     # Food collision
     if head.distance(food) < 20:
@@ -232,9 +301,10 @@ while True:
         score += 10
 
         if score > high_score:
-            high_score = score
-            try:
-                
+         high_score = score
+
+         with open("high_score.txt", "w") as file:
+          file.write(str(high_score))
 
         pen.clear()
         pen.write(
@@ -260,24 +330,7 @@ while True:
     for segment in segments:
         if segment.distance(head) < 10:
 
-            time.sleep(1)
-
-            head.goto(0, 0)
-            head.direction = "stop"
-
-            for seg in segments:
-                seg.goto(1000, 1000)
-
-            segments.clear()
-
-            score = 0
-
-            pen.clear()
-            pen.write(
-                f"Score: {score}  High Score: {high_score}",
-                align="center",
-                font=("Arial", 16, "bold")
-            )
+           show_game_over()
 
     time.sleep(difficulty)
 

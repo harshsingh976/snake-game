@@ -25,6 +25,7 @@ paused = False
 game_over = False
 difficulty = 0.10
 difficulty_name = "Medium"
+speed_level = "Normal"
 
 pen = turtle.Turtle()
 pen.speed(0)
@@ -79,7 +80,7 @@ def show_game_over():
 
 def restart_game():
     global score, game_over,game_started
-
+    global difficulty
     if not game_over:
         return
 
@@ -96,6 +97,7 @@ def restart_game():
     segments.clear()
 
     score = 0
+    difficulty = 0.10
     food.goto(0, 100)
 
     pen.clear()
@@ -246,6 +248,24 @@ def space_handler():
         restart_game()
     else:
         start_game()
+def update_speed():
+    global difficulty, speed_level
+
+    if score >= 150:
+        difficulty = 0.04
+        speed_level = "Extreme"
+
+    elif score >= 100:
+        difficulty = 0.06
+        speed_level = "Fast"
+
+    elif score >= 50:
+        difficulty = 0.08
+        speed_level = "Normal+"
+
+    else:
+        difficulty = 0.10
+        speed_level = "Normal"
 
 
 # Keyboard controls
@@ -299,6 +319,7 @@ while True:
         segments.append(new_segment)
 
         score += 10
+        update_speed()
 
         if score > high_score:
          high_score = score
@@ -308,7 +329,7 @@ while True:
 
         pen.clear()
         pen.write(
-            f"Score: {score}  High Score: {high_score}",
+            f"Score: {score}  High Score: {high_score}  Speed: {speed_level}",
             align="center",
             font=("Arial", 16, "bold")
         )
